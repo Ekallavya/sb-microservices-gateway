@@ -1,0 +1,200 @@
+#1 Ensure all modules/projects maven build successfull,ensure target folder created and required  jar files generated
+
+#2 create docker images and push to docker registry
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\service-registry> docker build -t serviceregistry .
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\service-registry> docker image tag serviceregistry:latest indrajith007/serviceregistry:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\service-registry> docker image push indrajith007/serviceregistry:latest
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\CloudGateway> docker build -t cloudgateway .
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\CloudGateway> docker image tag cloudgateway:latest indrajith007/cloudgateway:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\CloudGateway> docker image push indrajith007/cloudgateway:latest
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ConfigServer> docker build -t configserver . 
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ConfigServer> docker image tag configserver:latest indrajith007/configserver:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ConfigServer> docker image push indrajith007/configserver:latest
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\OrderService> docker build -t orderservice .
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\OrderService> docker image tag orderservice:latest indrajith007/orderservice:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\OrderService> docker image push indrajith007/orderservice:latest
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\PaymentService> docker build -t paymentservice .  
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\PaymentService> docker image tag paymentservice:latest indrajith007/paymentservice:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\PaymentService> docker image push indrajith007/paymentservice:latest
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ProductService> docker build -t productservice . 
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ProductService> docker image tag productservice:latest indrajith007/productservice:latest
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\ProductService> docker image push indrajith007/productservice:latest
+
+#3 start minikube cluster
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\k8s-eureka_registry> minikube start  --driver=docker
+	
+	
+#4. deploy all kubernetes yaml files one go
+
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes\k8s-eureka_registry> kubectl apply -f .
+	
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes> kubectl apply -f .\k8s-eureka_registry\
+	
+	deployment.apps/cloud-gateway-app created
+	service/cloud-gateway-svc created
+	configmap/config-cm created
+	configmap/eureka-cm created
+	configmap/mysql-cm created
+	deployment.apps/config-server-app created
+	service/config-server-svc created
+	persistentvolume/mysql-pv created
+	persistentvolumeclaim/mysql-pvc created
+	statefulset.apps/mysql created
+	configmap/mysql-initdb-cm created
+	service/mysql created
+	deployment.apps/order-service-app created
+	service/order-service-svc created
+	deployment.apps/payment-service-app created
+	service/payment-service-svc created
+	deployment.apps/product-service-app created
+	service/product-service-svc created
+	deployment.apps/redis-app created
+	service/redis created
+	statefulset.apps/eureka created
+	service/eureka created
+	service/eureka-lb created
+	deployment.apps/zipkin created
+	service/zipkin-svc created
+	service/zipkin-lb-svc created
+	PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes>
+	
+#5 verify all kubernetes workloads
+      
+	   kubectl get all
+
+  ensure all pods ,services,replicas  ,loadbalancers are running fine without errors 
+  
+	NAME                                       READY   STATUS    RESTARTS       AGE
+	pod/cloud-gateway-app-698887b545-5btzf     1/1     Running   17 (82s ago)   10h
+	pod/config-server-app-7b4c66c754-6lmsm     1/1     Running   6 (82s ago)    10h
+	pod/eureka-0                               1/1     Running   6 (82s ago)    10h
+	pod/mysql-0                                1/1     Running   6 (82s ago)    10h
+	pod/order-service-app-77c7bc7c86-tcqks     1/1     Running   17 (82s ago)   10h
+	pod/payment-service-app-86d9756789-zdbfs   1/1     Running   16 (82s ago)   10h
+	pod/product-service-app-668884575c-rkj2g   1/1     Running   18 (82s ago)   10h
+	pod/redis-app-85bb56586b-whqvw             1/1     Running   6 (82s ago)    10h
+	pod/zipkin-689b4c7fd5-55md9                1/1     Running   6 (82s ago)    10h
+
+	NAME                          TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+	service/cloud-gateway-svc     LoadBalancer   10.104.25.64     <pending>     80:32365/TCP     10h
+	service/config-server-svc     ClusterIP      10.99.153.89     <none>        80/TCP           10h
+	service/eureka                ClusterIP      None             <none>        8761/TCP         10h
+	service/eureka-lb             NodePort       10.96.221.53     <none>        80:32053/TCP     10h
+	service/kubernetes            ClusterIP      10.96.0.1        <none>        443/TCP          57d
+	service/mysql                 ClusterIP      None             <none>        3306/TCP         10h
+	service/order-service-svc     ClusterIP      10.106.50.25     <none>        80/TCP           10h
+	service/payment-service-svc   ClusterIP      10.99.88.12      <none>        80/TCP           10h
+	service/product-service-svc   ClusterIP      10.105.24.72     <none>        80/TCP           10h
+	service/redis                 ClusterIP      10.107.110.139   <none>        6379/TCP         10h
+	service/zipkin-lb-svc         LoadBalancer   10.107.214.232   <pending>     9411:31143/TCP   10h
+	service/zipkin-svc            ClusterIP      10.109.221.208   <none>        9411/TCP         10h
+
+	NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+	deployment.apps/cloud-gateway-app     1/1     1            1           10h
+	deployment.apps/config-server-app     1/1     1            1           10h
+	deployment.apps/order-service-app     1/1     1            1           10h
+	deployment.apps/payment-service-app   1/1     1            1           10h
+	deployment.apps/product-service-app   1/1     1            1           10h
+	deployment.apps/redis-app             1/1     1            1           10h
+	deployment.apps/zipkin                1/1     1            1           10h
+
+	NAME                                             DESIRED   CURRENT   READY   AGE
+	replicaset.apps/cloud-gateway-app-698887b545     1         1         1       10h
+	replicaset.apps/config-server-app-7b4c66c754     1         1         1       10h
+	replicaset.apps/order-service-app-77c7bc7c86     1         1         1       10h
+	replicaset.apps/payment-service-app-86d9756789   1         1         1       10h
+	replicaset.apps/product-service-app-668884575c   1         1         1       10h
+	replicaset.apps/redis-app-85bb56586b             1         1         1       10h
+	replicaset.apps/zipkin-689b4c7fd5                1         1         1       10h
+
+	NAME                      READY   AGE
+	statefulset.apps/eureka   1/1     10h
+	statefulset.apps/mysql    1/1     10h
+  
+		
+#6 get cloud getway loadbalance kubernetes proxy url for external access
+
+     minikube service 	cloud-gateway-svc	
+	 
+|-----------|-------------------|-------------|---------------------------|
+| NAMESPACE |       NAME        | TARGET PORT |            URL            |
+|-----------|-------------------|-------------|---------------------------|
+| default   | cloud-gateway-svc |          80 | http://192.168.49.2:32365 |
+|-----------|-------------------|-------------|---------------------------|
+* Starting tunnel for service cloud-gateway-svc.
+|-----------|-------------------|-------------|------------------------|
+| NAMESPACE |       NAME        | TARGET PORT |          URL           |
+|-----------|-------------------|-------------|------------------------|
+| default   | cloud-gateway-svc |             | http://127.0.0.1:64990 |
+|-----------|-------------------|-------------|------------------------|
+* Opening service default/cloud-gateway-svc in default browser...
+! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+	
+#7 Postman testing	
+
+    create sample product data  for testing
+	
+	method:post
+	
+	ex:
+	      http://127.0.0.1:64990/product
+		 
+		 {
+			"name":"Iphone17",
+			"price": 20000,
+			"quantity":10
+		 }
+		 
+	get product details
+	
+	127.0.0.1:59667/product/1
+	
+		{
+			"productId":2,
+			"name":"Iphone17",
+			"price": 20000,
+			"quantity":10
+		 }
+#8. After testing delete all kubernetes workloads	
+
+
+PS D:\U360_SpringBootMicroservices\444_codebuffer\sb-microservices-kubernetes> kubectl delete -f .\k8s-eureka_registry\
+
+deployment.apps "cloud-gateway-app" deleted from default namespace
+service "cloud-gateway-svc" deleted from default namespace
+configmap "config-cm" deleted from default namespace
+configmap "eureka-cm" deleted from default namespace
+configmap "mysql-cm" deleted from default namespace
+deployment.apps "config-server-app" deleted from default namespace
+service "config-server-svc" deleted from default namespace
+persistentvolume "mysql-pv" deleted
+persistentvolumeclaim "mysql-pvc" deleted from default namespace
+statefulset.apps "mysql" deleted from default namespace
+configmap "mysql-initdb-cm" deleted from default namespace
+service "mysql" deleted from default namespace
+deployment.apps "order-service-app" deleted from default namespace
+service "order-service-svc" deleted from default namespace
+deployment.apps "payment-service-app" deleted from default namespace
+service "payment-service-svc" deleted from default namespace
+deployment.apps "product-service-app" deleted from default namespace
+service "product-service-svc" deleted from default namespace
+deployment.apps "redis-app" deleted from default namespace
+service "redis" deleted from default namespace
+statefulset.apps "eureka" deleted from default namespace
+service "eureka" deleted from default namespace
+service "eureka-lb" deleted from default namespace
+deployment.apps "zipkin" deleted from default namespace
+service "zipkin-svc" deleted from default namespace
+service "zipkin-lb-svc" deleted from default namespace
+	   
+	   
+	   
+	   
+	   

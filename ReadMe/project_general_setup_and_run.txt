@@ -1,0 +1,2 @@
+#Build and run  service-registry for eureka server
+#Build and run  config-server for spring cloud config server
