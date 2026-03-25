@@ -10,3 +10,5 @@ spring:
         git:
           uri: https://github.com/shabbirdwd53/spring-app-config
           clone-on-start: true
+  logging:
+    file: D:/U360_SpringBootMicroservices/AppLogs/sb-microservices-gateway.log

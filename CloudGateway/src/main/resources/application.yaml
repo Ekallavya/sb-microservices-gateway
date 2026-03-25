@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: API-GATEWAY
+  logging:
+    file: D:/U360_SpringBootMicroservices/AppLogs/sb-microservices-gateway.log
   config:
     import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
   cloud:

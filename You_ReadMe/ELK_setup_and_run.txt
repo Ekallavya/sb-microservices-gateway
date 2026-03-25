@@ -1,0 +1,131 @@
+#Run ElasticSearch service
+ 
+  D:\open-framework\elasticsearch-9.3.2\bin>elasticsearch.bat
+  
+  open browser
+  localhost:9200
+  
+  output:
+  
+	  {
+	  "name" : "DESKTOP-K08DPOB",
+	  "cluster_name" : "elastic-cluster1",
+	  "cluster_uuid" : "scjzh3dkStCT3vV_R2k8Bw",
+	  "version" : {
+		"number" : "9.3.2",
+		"build_flavor" : "default",
+		"build_type" : "zip",
+		"build_hash" : "43a703737aab6baefa748bc7b69e4054926f2b2c",
+		"build_date" : "2026-03-16T13:12:56.143057855Z",
+		"build_snapshot" : false,
+		"lucene_version" : "10.3.2",
+		"minimum_wire_compatibility_version" : "8.19.0",
+		"minimum_index_compatibility_version" : "8.0.0"
+	  },
+	  "tagline" : "You Know, for Search"
+	}
+	
+	to check all available indexes ,open browser and hit the url
+	
+	localhost:9200/_cat/indices
+	
+#Run Kibana service
+
+	D:\open-framework\kibana-9.3.0\bin>kibana.bat
+	
+	after suucessfull start
+	
+	open browser hit the url for kibana dashboard
+	
+	localhost:5601
+	
+	# create custom indexes
+	
+	   go to LeftTop corner click  3 lines symbol
+	   
+	   go to Management ,find Dev Tool , click on DevTool
+	   
+	   submit the following json input in left input pane
+	   
+	  PUT /sb-ms-ord-gateway
+		{
+		  "settings": {
+			"index": {
+			  "number_of_shards": 3,
+			  "number_of_replicas": 2
+			}
+		  }
+		}
+
+	
+	output :
+	{
+	  "acknowledged": true,
+	  "shards_acknowledged": true,
+	  "index": "sb-ms-ord-gateway"
+   }
+   
+   after creating custom index , adding dummy data to index
+   
+   
+	POST /sb-ms-ord-gateway/default
+		{
+		"name" : "event processing",
+		"instructor": {
+			"brand": "Oppo",
+			  "price": 21645,
+		  "quantity": 500
+		}
+		}
+		
+		
+		
+# Run Logstash service
+
+D:\open-framework\logstash-7.17.16\bin
+
+   go to bin  folder , open  logstash.conf
+   
+    add the following configuration
+	
+	input {
+		file {
+			path => "D:/U360_SpringBootMicroservices/AppLogs/sb-microservices-gateway.log"
+			start_position => "beginning"
+		}
+	}
+
+	output{
+		stdout {
+			codec => rubydebug
+		}
+	
+	elasticsearch {
+		hosts => ["localhost:9200"]
+		index => "sp-ms-ord-gateway-%{+yyyy.MM.dd}"
+	}
+}
+
+D:\open-framework\logstash-7.17.16\bin>logstash.bat -f logstash.conf
+
+#Read and follow the steps  as needed 
+
+  You_ReadMe/project_general_setup_and_run.txt
+
+
+#Build & Run microservice  ConfigServer
+
+#Build & Run microservice service-registry
+
+#Build & Run microservice ProductService
+
+#Build & Run microservice PaymentService
+
+#Build & Run microservice OrderService
+
+#Build & Run microservice CloudGateway 
+
+#Unit Testing
+
+
+

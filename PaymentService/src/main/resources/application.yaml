@@ -16,6 +16,8 @@ spring:
     name: PAYMENT-SERVICE
   config:
     import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
+  logging:
+    file: D:/U360_SpringBootMicroservices/AppLogs/sb-microservices-gateway.log
 
 eureka:
   instance:

@@ -15,6 +15,11 @@ spring:
     name: PRODUCT-SERVICE
   config:
     import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
+  logging:
+    file:
+#      path: D:/U360_SpringBootMicroservices/AppLogs
+      path: /logs
+      name: sb-microservices-gateway.txt
 
 eureka:
   instance:
